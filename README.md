@@ -1,4 +1,4 @@
-# BAWKY INDIEGAME ANALYSIS
+# BAWKY STEAM ANALYSIS
 
 Electron desktop app starter.
 
