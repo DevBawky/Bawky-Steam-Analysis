@@ -1,0 +1,59 @@
+{
+  "name": "indiegame-analysis",
+  "version": "0.1.0",
+  "description": "Steam genre dashboard for BAWKY INDIEGAME ANALYSIS.",
+  "author": "BAWKY",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "node --check src/main.js && node --check src/preload.js && node --check src/renderer/data-pipeline.js && node --check src/renderer/renderer.js",
+    "dist": "npm.cmd run build && electron-builder --win --linux --mac",
+    "dist:win": "npm.cmd run build && electron-builder --win",
+    "dist:linux": "npm.cmd run build && electron-builder --linux",
+    "dist:mac": "npm.cmd run build && electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.bawky.indiegame.analysis",
+    "productName": "BAWKY INDIEGAME ANALYSIS",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "app-icon.png"
+    },
+    "linux": {
+      "target": [
+        "tar.gz"
+      ],
+      "category": "Utility",
+      "icon": "app-icon.png"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities",
+      "icon": "app-icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^42.2.0",
+    "electron-builder": "^26.8.1"
+  }
+}

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BAWKY STEAM ANALYSIS</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="window-titlebar">
+      <div class="window-brand">
+        <span class="app-mark"></span>
+        <strong>BAWKY STEAM ANALYSIS</strong>
+      </div>
+      <div class="window-actions" aria-label="창 제어">
+        <button id="localeToggle" class="locale-toggle" type="button" aria-label="언어 전환" data-locale="ko">
+          <span>KO</span>
+          <span>EN</span>
+        </button>
+        <button id="windowMinimize" class="window-button" type="button" aria-label="최소화">−</button>
+        <button id="windowMaximize" class="window-button" type="button" aria-label="최대화">□</button>
+        <button id="windowClose" class="window-button close" type="button" aria-label="닫기">×</button>
+      </div>
+    </header>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" data-i18n="heroEyebrow">Steam 글로벌 장르 인텔리전스</p>
+          <h1>BAWKY STEAM ANALYSIS</h1>
+        </div>
+        <div class="status-cluster" aria-label="파이프라인 상태">
+          <div class="status-grid">
+            <span data-i18n="sources">수집 소스</span>
+            <strong id="sourceCount">4</strong>
+            <span data-i18n="coverage">커버리지</span>
+            <strong id="coverageScore">--</strong>
+          </div>
+          <button id="sourceInfoButton" class="info-button" type="button" data-i18n="sourceInfo">수집 방식 보기</button>
+        </div>
+      </header>
+
+      <section class="control-strip" aria-label="대시보드 제어">
+        <label class="field">
+          <span data-i18n="year">연도</span>
+          <select id="yearSelect"></select>
+        </label>
+        <div class="segmented" role="group" aria-label="지표 모드">
+          <button class="mode-button is-active" type="button" data-mode="blended" data-i18n="blended">종합</button>
+          <button class="mode-button" type="button" data-mode="demand" data-i18n="demand">수요</button>
+          <button class="mode-button" type="button" data-mode="supply" data-i18n="supply">공급</button>
+        </div>
+        <div class="segmented market-segment" role="group" aria-label="시장 구분">
+          <button class="market-button is-active" type="button" data-market="all" data-i18n="marketAll">전체</button>
+          <button class="market-button" type="button" data-market="indie" data-i18n="marketIndie">인디</button>
+          <button class="market-button" type="button" data-market="aaa" data-i18n="marketAAA">AAA</button>
+        </div>
+        <div class="export-actions" aria-label="내보내기">
+          <button id="exportJsonButton" class="ghost-button" type="button">JSON</button>
+          <button id="exportCsvButton" class="ghost-button" type="button">CSV</button>
+        </div>
+        <button id="resetButton" class="ghost-button" type="button" data-i18n="reset">세부 분석 초기화</button>
+      </section>
+
+      <section class="dataset-notice" aria-label="데이터 상태 안내">
+        <strong data-i18n="mockNotice">현재 화면은 실제 Steam 실시간 데이터가 아닙니다.(로컬 데이터 기반)</strong>
+        <span class="collection-status"><span data-i18n="collectionStatus">마지막 업데이트:</span> <span id="lastGeneratedAt">--</span></span>
+      </section>
+
+      <section class="dashboard-grid">
+        <section class="analysis-group" aria-label="그래프와 세부 분석">
+          <section class="chart-column" aria-label="장르 흐름과 점유율 그래프">
+            <section class="chart-panel" aria-labelledby="chartTitle">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow" data-i18n="stackedBars">100% 누적 가로 막대</p>
+                  <h2 id="chartTitle" data-i18n="regionalShare">지역별 장르 점유율</h2>
+                </div>
+                <div id="activeMode" class="active-mode">종합 점수</div>
+              </div>
+              <div class="chart-filter-strip" aria-label="그래프 장르 필터">
+                <span class="detail-kicker" data-i18n="tagFlow">태그 기반 장르 흐름</span>
+                <div id="genreButtons" class="genre-buttons"></div>
+              </div>
+              <div id="chart" class="chart" aria-live="polite"></div>
+              <div id="topGamesCard" class="top-games-card chart-games"></div>
+            </section>
+          </section>
+
+          <div id="detailCard" class="detail-card detail-column"></div>
+        </section>
+
+        <aside class="insight-panel hybrid-group" aria-label="장르 세부 분석">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow" data-i18n="hybridBoard">하이브리드 분석 보드</p>
+              <h2 data-i18n="tagTopTrend">태그 Top 10과 상승/하락</h2>
+            </div>
+          </div>
+          <div class="hybrid-board-grid">
+            <div id="hybridTagsCard" class="hybrid-tags-card"></div>
+            <div id="trendCard" class="trend-card">
+              <div class="trend-controls">
+                <label>
+                  <span data-i18n="from">시작</span>
+                  <select id="trendFromSelect"></select>
+                </label>
+                <label>
+                  <span data-i18n="to">종료</span>
+                  <select id="trendToSelect"></select>
+                </label>
+              </div>
+              <div id="trendBody"></div>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div id="sourceModal" class="modal-backdrop" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="sourceModalTitle">
+        <header class="modal-header">
+          <div>
+            <p class="eyebrow" data-i18n="sourcesCoverage">수집 소스와 커버리지</p>
+            <h2 id="sourceModalTitle" data-i18n="pipelineInfo">데이터 파이프라인 설명</h2>
+          </div>
+          <button id="sourceModalClose" class="icon-button" type="button" aria-label="닫기">×</button>
+        </header>
+
+        <div class="modal-grid">
+          <article class="modal-wide">
+            <h3 data-i18n="collectionFlowTitle">수집 방식 한눈에 보기</h3>
+            <div class="pipeline-flow" aria-label="data collection flow">
+              <div class="flow-node">
+                <span>1</span>
+                <strong data-i18n="flowSources">여러 출처 수집</strong>
+                <p data-i18n="flowSourcesText">Steam, SteamSpy, SteamDB, VG Insights에서 앱/태그/성과 지표를 가져옵니다.</p>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node">
+                <span>2</span>
+                <strong data-i18n="flowNormalize">동일 게임 매칭</strong>
+                <p data-i18n="flowNormalizeText">appId와 제목을 기준으로 같은 게임의 데이터를 하나로 묶습니다.</p>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node">
+                <span>3</span>
+                <strong data-i18n="flowValidate">교차 검증</strong>
+                <p data-i18n="flowValidateText">결측치와 극단값을 제거하고 신뢰도 가중 평균을 계산합니다.</p>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-node">
+                <span>4</span>
+                <strong data-i18n="flowRender">대시보드 렌더링</strong>
+                <p data-i18n="flowRenderText">지역별 100% 점유율, 하이브리드 태그, 상승/하락 추세로 변환합니다.</p>
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <h3 data-i18n="usedSourcesTitle">활용 소스</h3>
+            <ul>
+              <li><strong>Steam Web API / Store API</strong><span data-i18n="steamSourceText">앱 목록, 기본 메타데이터, 장르, 출시일 후보를 수집합니다.</span></li>
+              <li><strong>SteamSpy</strong><span data-i18n="steamSpyText">태그, 소유자 추정 범위, 리뷰 기반 지표를 보강합니다.</span></li>
+              <li><strong>SteamDB Snapshot</strong><span data-i18n="steamDbText">공개 API가 아니므로 약관을 준수한 로컬 스냅샷 또는 자체 재수집 결과로 다룹니다.</span></li>
+              <li><strong>VG Insights</strong><span data-i18n="vgInsightsText">구독형 API를 통해 추정 판매량, 리뷰, 지역/시장 지표를 보강하는 소스로 가정합니다.</span></li>
+            </ul>
+          </article>
+
+          <article>
+            <h3 data-i18n="coverageMeaningTitle">커버리지란?</h3>
+            <p data-i18n="coverageMeaningText">
+              커버리지는 목표 데이터셋 중 유효하게 교차 검증 가능한 레코드의 비율입니다.
+              예를 들어 Steam 앱 목록 10,000개 중 게임으로 판정되고, 최소 2개 이상 소스에서
+              주요 지표가 확보된 항목이 9,300개라면 커버리지는 93%입니다.
+            </p>
+          </article>
+
+          <article class="modal-wide">
+            <h3 data-i18n="sourceTableTitle">소스별 역할</h3>
+            <table class="source-table">
+              <thead>
+                <tr>
+                  <th data-i18n="tableSource">소스</th>
+                  <th data-i18n="tableBestFor">잘 쓰는 지표</th>
+                  <th data-i18n="tableCaution">주의점</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Steam API</td>
+                  <td data-i18n="steamBestFor">공식 앱/장르/출시 정보</td>
+                  <td data-i18n="steamCaution">성과 지표는 제한적입니다.</td>
+                </tr>
+                <tr>
+                  <td>SteamSpy</td>
+                  <td data-i18n="steamSpyBestFor">태그, 리뷰, 소유자 추정</td>
+                  <td data-i18n="steamSpyCaution">소유자 수는 범위 추정값입니다.</td>
+                </tr>
+                <tr>
+                  <td>SteamDB</td>
+                  <td data-i18n="steamDbBestFor">동시 접속자와 피크 추세</td>
+                  <td data-i18n="steamDbCaution">공식 공개 API가 아니므로 스냅샷 기반으로 다룹니다.</td>
+                </tr>
+                <tr>
+                  <td>VG Insights</td>
+                  <td data-i18n="vgBestFor">판매량과 시장 성과 추정</td>
+                  <td data-i18n="vgCaution">유료/추정 데이터라 검증 가중치를 둡니다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article>
+            <h3 data-i18n="crossValidationTitle">교차 검증 파이프라인</h3>
+            <ol>
+              <li data-i18n="pipelineStepOne">여러 소스에서 동일 appId의 메타데이터와 성과 지표를 수집합니다.</li>
+              <li data-i18n="pipelineStepTwo">태그 우선순위 규칙으로 하이브리드 장르를 먼저 확정합니다.</li>
+              <li data-i18n="pipelineStepThree">결측치는 제외하고, 중앙값 절대 편차 방식으로 극단값을 제거합니다.</li>
+              <li data-i18n="pipelineStepFour">소스별 신뢰 가중치를 적용해 수요/공급/종합 점수를 평균화합니다.</li>
+              <li data-i18n="pipelineStepFive">지역별 막대 합계가 정확히 100%가 되도록 반올림 오차를 보정합니다.</li>
+            </ol>
+          </article>
+
+          <article>
+            <h3 data-i18n="currentDataStateTitle">현재 앱 상태</h3>
+            <p data-i18n="currentDataStateText">
+              현재는 네트워크 수집을 실제로 수행하지 않는 로컬 목업입니다. UI와 파이프라인 구조,
+              이상치 제거, 평균화, 장르 우선순위, 100% 누적 렌더링을 검증하기 위한 단계입니다.
+            </p>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <script src="./data-pipeline.js"></script>
+    <script src="./renderer.js"></script>
+  </body>
+</html>
