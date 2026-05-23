@@ -2,7 +2,7 @@
   <img width="200" height="200" alt="BAWKY STEAM ANALYSIS AppIcon" src="https://github.com/DevBawky/Bawky-Steam-Analysis/blob/main/assets/app-icon%20(2).png" />
 </p>
 
-<h1 align="center">BAWKY INDIEGAME ANALYSIS</h1>
+<h1 align="center">BAWKY STEAM ANALYSIS</h1>
 
 <p align="center">
   <b>Steam 장르 및 인디게임 시장 흐름을 분석하는 데스크톱 대시보드</b><br>
