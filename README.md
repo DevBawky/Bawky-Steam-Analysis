@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="200" height="200" alt="BAWKY INDIEGAME ANALYSIS AppIcon" src="https://github.com/DevBawky/Bawky-Steam-Analysis/blob/main/assets/app-icon%20(2).png" />
+  <img width="200" height="200" alt="BAWKY STEAM ANALYSIS AppIcon" src="https://github.com/DevBawky/Bawky-Steam-Analysis/blob/main/assets/app-icon%20(2).png" />
 </p>
 
 <h1 align="center">BAWKY INDIEGAME ANALYSIS</h1>
